@@ -1,0 +1,10 @@
+set AWS_SHARED_CREDENTIALS_FILE=C:\Dev\luminor.sre\_AWS_SHARED_CREDENTIALS_FILE
+
+terraform.exe init -backend-config="backend/staging.hcl" -reconfigure
+
+terraform plan  -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+terraform apply -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+terraform destroy
+

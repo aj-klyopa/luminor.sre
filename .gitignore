@@ -1,5 +1,8 @@
 _AWS_SHARED_CREDENTIALS_FILE
-bootstrap/cmd
-bootstrap/.terraform.lock.hcl
+
+bootstrap/.terraform.*
 bootstrap/terraform.tfstate
 bootstrap/.terraform/*
+
+terraform/.terraform.*
+terraform/.terraform/*
