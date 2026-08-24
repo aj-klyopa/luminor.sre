@@ -1,6 +1,9 @@
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
+#checkov:skip=CKV_AWS_109:KMS key policy grants full key administration only to the account root principal
+#checkov:skip=CKV_AWS_111:KMS key policy grants full key administration only to the account root principal
+#checkov:skip=CKV_AWS_356:KMS key policies require resource "*" for key-level permissions
 data "aws_iam_policy_document" "logs_kms" {
 
   statement {
