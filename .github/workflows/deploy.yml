@@ -1,0 +1,73 @@
+name: Deploy AWS Infrastructure
+
+on:
+  push:
+    branches:
+      - staging
+      - prod
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.ref_name == 'prod' && 'prod' || 'staging' }}
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get AWS region
+        working-directory: .
+        id: terraform_vars
+        shell: bash
+        run: |
+          REGION=$(grep '^aws_region' "environments/${GITHUB_REF_NAME}.tfvars" | sed 's/.*=\s*"\([^"]*\)".*/\1/')
+          echo "aws_region=$REGION" >> "$GITHUB_OUTPUT"
+          echo "AWS Region: $REGION"
+
+      - name: Build Lambda package
+        working-directory: terraform/modules/lambda
+        run: |
+          zip -r ../../lambda.zip app.py
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ format('arn:aws:iam::{0}:role/{1}-serverless-healthcheck-github-actions-role', vars.AWS_ACCOUNT_ID, github.ref_name) }}
+          aws-region: ${{ steps.terraform_vars.outputs.aws_region }}
+
+
+      - name: Debug OIDC identity
+        run: |
+          echo "Testing AWS identity"
+          aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform format check
+        run: terraform fmt -check
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="backend/${{ github.ref_name == 'prod' && 'prod' || 'staging' }}.hcl" \
+            -reconfigure
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -var-file="../environments/${{ github.ref_name == 'prod' && 'prod' || 'staging' }}.tfvars" -var-file="../environments/common.tfvars"
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve -var-file="../environments/${{ github.ref_name == 'prod' && 'prod' || 'staging' }}.tfvars" -var-file="../environments/common.tfvars"

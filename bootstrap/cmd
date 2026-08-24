@@ -1,0 +1,18 @@
+set AWS_SHARED_CREDENTIALS_FILE=C:\Dev\luminor.sre\_AWS_SHARED_CREDENTIALS_FILE
+export AWS_SHARED_CREDENTIALS_FILE=
+
+
+terraform apply -var-file="../environments/staging.tfvars"
+
+
+cd terraform/bootstrap
+
+set AWS_SHARED_CREDENTIALS_FILE=C:\Dev\Lum\_AWS_SHARED_CREDENTIALS_FILE
+#export AWS_PROFILE=terraform-admin
+
+terraform init
+
+terraform.exe plan -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+terraform.exe apply -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+terraform.exe destroy

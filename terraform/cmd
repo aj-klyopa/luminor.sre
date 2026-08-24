@@ -1,0 +1,21 @@
+set AWS_SHARED_CREDENTIALS_FILE=C:\Dev\luminor.sre\_AWS_SHARED_CREDENTIALS_FILE
+
+terraform.exe init -backend-config="backend/staging.hcl" -reconfigure
+
+terraform plan  -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+terraform apply -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+terraform destroy
+
+
+##########
+
+https://cjlltjmgbj.execute-api.eu-north-1.amazonaws.com/health
+
+
+curl -X POST https://cjlltjmgbj.execute-api.eu-north-1.amazonaws.com/health  -H "Content-Type: application/json" -d "{\"payload\":\"t001\"}"
+
+# GET
+https://cjlltjmgbj.execute-api.eu-north-1.amazonaws.com/health?payload=t002
+
