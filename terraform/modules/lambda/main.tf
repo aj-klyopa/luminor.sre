@@ -1,6 +1,28 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "lambda_env_kms" {
+  statement {
+    sid    = "EnableRootAccountPermissions"
+    effect = "Allow"
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
 resource "aws_kms_key" "lambda_env" {
   description         = "KMS key for ${var.environment} Lambda environment variables"
   enable_key_rotation = true
+
+  policy = data.aws_iam_policy_document.lambda_env_kms.json
 
   tags = {
     Environment = var.environment
@@ -34,17 +56,22 @@ resource "aws_lambda_function" "health" {
 
   #checkov:skip=CKV_AWS_116:Lambda is invoked synchronously through API Gateway and does not use asynchronous events
   #checkov:skip=CKV_AWS_272:Code signing is not required for this internal health-check Lambda
+  #checkov:skip=CKV_AWS_117:Lambda does not require VPC access and uses AWS public service endpoints
 
   function_name = var.lambda_name
   filename = data.archive_file.lambda.output_path
 
   kms_key_arn = aws_kms_key.lambda_env.arn
+  reserved_concurrent_executions = 10
 
   handler = "app.lambda_handler"
   runtime = "python3.12"
 
   role = var.lambda_role
 
+  tracing_config {
+    mode = "Active"
+  }
 
   source_code_hash = filebase64sha256("${data.archive_file.lambda.output_path}")
 

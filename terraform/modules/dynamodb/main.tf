@@ -1,6 +1,28 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "dynamodb_kms" {
+  statement {
+    sid    = "EnableRootAccountPermissions"
+    effect = "Allow"
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
 resource "aws_kms_key" "dynamodb" {
   description         = "KMS key for ${var.environment} DynamoDB"
   enable_key_rotation = true
+
+  policy = data.aws_iam_policy_document.dynamodb_kms.json
 
   tags = {
     Environment = var.environment
