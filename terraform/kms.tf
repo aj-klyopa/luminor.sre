@@ -3,9 +3,13 @@ data "aws_caller_identity" "current" {}
 
 #checkov:skip=CKV_AWS_109:KMS key policy grants full key administration only to the account root principal
 #checkov:skip=CKV_AWS_111:KMS key policy grants full key administration only to the account root principal
-#checkov:skip=CKV_AWS_356:KMS key policies require resource "*" for key-level permissions
+#checkov:skip=CKV_AWS_356:KMS key policy uses resource "*" as required by KMS key policies; access is constrained by principal and encryption context
 data "aws_iam_policy_document" "logs_kms" {
 
+
+  #checkov:skip=CKV_AWS_109:KMS key policy grants full key administration only to the account root principal
+  #checkov:skip=CKV_AWS_111:KMS key policy grants full key administration only to the account root principal
+  #checkov:skip=CKV_AWS_356:KMS key policy uses resource "*" as required by KMS key policies; access is constrained by principal and encryption context
   statement {
     sid    = "EnableRootAccountPermissions"
     effect = "Allow"
