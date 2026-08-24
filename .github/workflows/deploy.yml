@@ -24,16 +24,17 @@ jobs:
 
     steps:
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Get AWS region
+        working-directory: .
         id: terraform_vars
         shell: bash
         run: |
           REGION=$(grep '^aws_region' "environments/${GITHUB_REF_NAME}.tfvars" | sed 's/.*=\s*"\([^"]*\)".*/\1/')
           echo "aws_region=$REGION" >> "$GITHUB_OUTPUT"
           echo "AWS Region: $REGION"
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       - name: Build Lambda package
         working-directory: terraform/modules/lambda
