@@ -16,3 +16,24 @@ terraform.exe plan -var-file="../environments/staging.tfvars" -var-file="../envi
 terraform.exe apply -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
 
 terraform.exe destroy
+
+====
+Staging
+cd bootstrap
+
+terraform workspace new staging
+terraform workspace select staging
+
+terraform plan -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+terraform apply -var-file="../environments/staging.tfvars" -var-file="../environments/common.tfvars"
+
+Production
+cd bootstrap
+
+terraform workspace new prod
+terraform workspace select prod
+
+terraform plan -var-file="../environments/prod.tfvars" -var-file="../environments/common.tfvars"
+
+terraform apply -var-file="../environments/prod.tfvars" -var-file="../environments/common.tfvars"
