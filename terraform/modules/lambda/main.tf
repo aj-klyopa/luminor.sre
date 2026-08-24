@@ -1,13 +1,29 @@
+resource "aws_kms_key" "lambda_logs" {
+  description         = "KMS key for ${var.environment} Lambda CloudWatch logs"
+  enable_key_rotation = true
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "terraform"
+  }
+}
+
+resource "aws_kms_alias" "lambda_logs" {
+  name          = "alias/${var.environment}-lambda-logs"
+  target_key_id = aws_kms_key.lambda_logs.key_id
+}
+
 data "archive_file" "lambda" {
   type        = "zip"
   source_file = "${path.module}/app.py"
   output_path = "${path.root}/lambda.zip"
 }
 
-
 resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${var.lambda_name}"
   retention_in_days = 14
+  kms_key_id        = aws_kms_key.lambda_logs.arn
+
   tags = {
     Environment = var.environment
     ManagedBy   = "terraform"
