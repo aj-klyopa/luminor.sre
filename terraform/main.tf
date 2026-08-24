@@ -13,11 +13,11 @@ module "iam" {
 
 
 module "lambda" {
-  source          = "./modules/lambda"
-  environment     = var.environment
-  lambda_role     = module.iam.lambda_role_arn
-  table_name      = module.dynamodb.table_name
-  lambda_name     = local.lambda_name  
+  source      = "./modules/lambda"
+  environment = var.environment
+  lambda_role = module.iam.lambda_role_arn
+  table_name  = module.dynamodb.table_name
+  lambda_name = local.lambda_name
 }
 
 
