@@ -18,27 +18,47 @@ resource "aws_iam_role" "lambda_role" {
   assume_role_policy = data.aws_iam_policy_document.assume_lambda.json
 }
 
+
 data "aws_iam_policy_document" "lambda_policy" {
   statement {
     sid = "WriteLambdaLogs"
+
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
+
     resources = [
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.lambda_name}:log-stream:*"
     ]
   }
+
   statement {
     sid = "WriteToDynamoDB"
+
     actions = [
       "dynamodb:PutItem"
     ]
+
     resources = [
       var.dynamodb_arn
     ]
   }
+
+  statement {
+    sid = "UseDynamoDBKMSKey"
+
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+
+    resources = [
+      var.dynamodb_kms_key_arn
+    ]
+  }
 }
+
 
 resource "aws_iam_policy" "lambda_policy" {
   name   = "${var.environment}-lambda-policy"
