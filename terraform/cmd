@@ -8,3 +8,14 @@ terraform apply -var-file="../environments/staging.tfvars" -var-file="../environ
 
 terraform destroy
 
+
+##########
+
+https://cjlltjmgbj.execute-api.eu-north-1.amazonaws.com/health
+
+
+curl -X POST https://cjlltjmgbj.execute-api.eu-north-1.amazonaws.com/health  -H "Content-Type: application/json" -d "{\"payload\":\"t001\"}"
+
+# GET
+https://cjlltjmgbj.execute-api.eu-north-1.amazonaws.com/health?payload=t002
+

@@ -6,3 +6,6 @@ bootstrap/.terraform/*
 
 terraform/.terraform.*
 terraform/.terraform/*
+
+terraform/lambda.zip
+

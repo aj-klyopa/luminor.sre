@@ -19,3 +19,12 @@ module "lambda" {
   table_name      = module.dynamodb.table_name
   lambda_name     = local.lambda_name  
 }
+
+
+module "apigw" {
+  source      = "./modules/apigw"
+  environment = var.environment
+  lambda_arn  = module.lambda.lambda_arn
+  lambda_name = module.lambda.lambda_name
+}
+
