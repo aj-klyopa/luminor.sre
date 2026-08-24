@@ -2,7 +2,10 @@ _AWS_SHARED_CREDENTIALS_FILE
 
 bootstrap/.terraform.*
 bootstrap/terraform.tfstate
+bootstrap/terraform.tfstate.backup
+bootstrap/terraform.*
 bootstrap/.terraform/*
+
 
 terraform/.terraform.*
 terraform/.terraform/*
