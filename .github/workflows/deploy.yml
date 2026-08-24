@@ -44,8 +44,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ format('{0}-serverless-healthcheck-github-actions-role', github.ref_name) }}
-          aws-account-id: ${{ vars.AWS_ACCOUNT_ID }}
+          role-to-assume: ${{ format('arn:aws:iam::{0}:role/{1}-serverless-healthcheck-github-actions-role', vars.AWS_ACCOUNT_ID, github.ref_name) }}
           aws-region: ${{ steps.terraform_vars.outputs.aws_region }}
 
 
