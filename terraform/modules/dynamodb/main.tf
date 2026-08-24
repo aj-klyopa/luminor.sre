@@ -1,3 +1,48 @@
+data "aws_caller_identity" "current" {}
+
+#checkov:skip=CKV_AWS_109:KMS key policy grants full key administration only to the account root principal
+#checkov:skip=CKV_AWS_111:KMS key policy grants full key administration only to the account root principal
+#checkov:skip=CKV_AWS_356:KMS key policies require resource "*" for key-level permissions
+data "aws_iam_policy_document" "dynamodb_kms" {
+
+
+  #checkov:skip=CKV_AWS_356:KMS root account permissions require wildcard resource
+  #checkov:skip=CKV_AWS_109:KMS root account requires full key management permissions
+  #checkov:skip=CKV_AWS_111:KMS root account requires full key management permissionsons
+  statement {
+    sid    = "EnableRootAccountPermissions"
+    effect = "Allow"
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_kms_key" "dynamodb" {
+  description         = "KMS key for ${var.environment} DynamoDB"
+  enable_key_rotation = true
+
+  policy = data.aws_iam_policy_document.dynamodb_kms.json
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "terraform"
+  }
+}
+
+resource "aws_kms_alias" "dynamodb" {
+  name          = "alias/${var.environment}-dynamodb"
+  target_key_id = aws_kms_key.dynamodb.key_id
+}
+
 resource "aws_dynamodb_table" "requests" {
   name         = "${var.environment}-requests-db"
   billing_mode = "PAY_PER_REQUEST"
@@ -9,6 +54,12 @@ resource "aws_dynamodb_table" "requests" {
   }
 
   server_side_encryption {
+    enabled     = true
+    kms_key_arn = aws_kms_key.dynamodb.arn
+  }
+
+  point_in_time_recovery {
     enabled = true
   }
+
 }

@@ -66,6 +66,15 @@ jobs:
       - name: Terraform validate
         run: terraform validate
 
+
+      - name: IaC Security Scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: terraform
+          framework: terraform
+          soft_fail: false
+
+
       - name: Terraform plan
         run: terraform plan -var-file="../environments/${{ github.ref_name == 'prod' && 'prod' || 'staging' }}.tfvars" -var-file="../environments/common.tfvars"
 
