@@ -69,7 +69,7 @@ resource "aws_lambda_function" "health" {
   filename = data.archive_file.lambda.output_path
 
   kms_key_arn = aws_kms_key.lambda_env.arn
-  reserved_concurrent_executions = 10
+  reserved_concurrent_executions = 2
 
   handler = "app.lambda_handler"
   runtime = "python3.12"
