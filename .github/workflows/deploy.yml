@@ -16,8 +16,6 @@ jobs:
     name: Deploy ${{ github.ref_name == 'prod' && 'prod' || 'staging' }}
     runs-on: ubuntu-latest
 
-    environment: ${{ github.ref_name == 'prod' && 'prod' || 'staging' }}
-
     defaults:
       run:
         working-directory: terraform
