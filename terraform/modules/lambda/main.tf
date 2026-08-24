@@ -1,5 +1,5 @@
-resource "aws_kms_key" "lambda_logs" {
-  description         = "KMS key for ${var.environment} Lambda CloudWatch logs"
+resource "aws_kms_key" "lambda_env" {
+  description         = "KMS key for ${var.environment} Lambda environment variables"
   enable_key_rotation = true
 
   tags = {
@@ -8,9 +8,9 @@ resource "aws_kms_key" "lambda_logs" {
   }
 }
 
-resource "aws_kms_alias" "lambda_logs" {
-  name          = "alias/${var.environment}-lambda-logs"
-  target_key_id = aws_kms_key.lambda_logs.key_id
+resource "aws_kms_alias" "lambda_env" {
+  name          = "alias/${var.environment}-lambda-env"
+  target_key_id = aws_kms_key.lambda_env.key_id
 }
 
 data "archive_file" "lambda" {
@@ -21,8 +21,8 @@ data "archive_file" "lambda" {
 
 resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${var.lambda_name}"
-  retention_in_days = 14
-  kms_key_id        = aws_kms_key.lambda_logs.arn
+  retention_in_days = 365
+  kms_key_id        = var.kms_key_arn
 
   tags = {
     Environment = var.environment
@@ -31,9 +31,14 @@ resource "aws_cloudwatch_log_group" "lambda" {
 }
 
 resource "aws_lambda_function" "health" {
+
+  #checkov:skip=CKV_AWS_116:Lambda is invoked synchronously through API Gateway and does not use asynchronous events
+  #checkov:skip=CKV_AWS_272:Code signing is not required for this internal health-check Lambda
+
   function_name = var.lambda_name
   filename = data.archive_file.lambda.output_path
 
+  kms_key_arn = aws_kms_key.lambda_env.arn
 
   handler = "app.lambda_handler"
   runtime = "python3.12"
@@ -51,5 +56,6 @@ resource "aws_lambda_function" "health" {
   depends_on = [
     aws_cloudwatch_log_group.lambda
   ]
+
 }
 
