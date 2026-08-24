@@ -43,10 +43,11 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-        with:          
-          role-to-assume: ${{ github.ref_name }}-serverless-healthcheck-github-actions-role
-	  aws-account-id: ${{ vars.AWS_ACCOUNT_ID }}
+        with:
+          role-to-assume: ${{ format('{0}-serverless-healthcheck-github-actions-role', github.ref_name) }}
+          aws-account-id: ${{ vars.AWS_ACCOUNT_ID }}
           aws-region: ${{ steps.terraform_vars.outputs.aws_region }}
+
 
       - name: Debug OIDC identity
         run: |
