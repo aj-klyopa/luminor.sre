@@ -8,6 +8,7 @@ data "aws_iam_policy_document" "dynamodb_kms" {
 
   #checkov:skip=CKV_AWS_356:KMS root account permissions require wildcard resource
   #checkov:skip=CKV_AWS_109:KMS root account requires full key management permissions
+  #checkov:skip=CKV_AWS_111:KMS root account requires full key management permissionsons
   statement {
     sid    = "EnableRootAccountPermissions"
     effect = "Allow"

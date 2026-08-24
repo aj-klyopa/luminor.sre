@@ -59,6 +59,8 @@ resource "aws_kms_key" "logs" {
   description         = "KMS key for ${var.environment} CloudWatch logs"
   enable_key_rotation = true
 
+  policy = data.aws_iam_policy_document.logs_kms.json
+
   tags = {
     Environment = var.environment
     ManagedBy   = "terraform"
