@@ -10,7 +10,7 @@ variable "aws_region" {
   type = string
 }
 
-variable "github_repository" {
+variable "github_oidc_repository" {
   type = string
 }
 
