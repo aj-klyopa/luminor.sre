@@ -1,8 +1,3 @@
-Settings -> Secrets and variables -> Actions -> Variables
-Name:  AWS_ACCOUNT_ID
-Value: <ID>
-
-
 # Serverless Health Check API with CI/CD
 
 ## Overview
@@ -96,6 +91,13 @@ Make sure you are using compatible versions before running the project.
 # Prerequisites
 
 Before using GitHub Actions deployment, create an AWS IAM Identity Provider for GitHub OIDC authentication.
+
+Also, add the AWS account ID as a GitHub Actions variable:
+
+**GitHub repository → Settings → Secrets and variables → Actions → Variables → New repository variable**
+
+- **Name:** `AWS_ACCOUNT_ID`
+- **Value:** `<AWS Account ID>`
 
 ## AWS OIDC Provider
 
