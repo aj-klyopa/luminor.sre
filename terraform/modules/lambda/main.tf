@@ -64,12 +64,12 @@ resource "aws_lambda_function" "health" {
   #checkov:skip=CKV_AWS_116:Lambda is invoked synchronously through API Gateway and does not use asynchronous events
   #checkov:skip=CKV_AWS_272:Code signing is not required for this internal health-check Lambda
   #checkov:skip=CKV_AWS_117:Lambda does not require VPC access and uses AWS public service endpoints
+  #checkov:skip=CKV_AWS_115:Reserved concurrency cannot be configured because the AWS account limit is 10 and AWS requires 10 unreserved executions
 
   function_name = var.lambda_name
   filename = data.archive_file.lambda.output_path
 
   kms_key_arn = aws_kms_key.lambda_env.arn
-  reserved_concurrent_executions = 2
 
   handler = "app.lambda_handler"
   runtime = "python3.12"
